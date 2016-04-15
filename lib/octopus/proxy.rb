@@ -272,9 +272,9 @@ module Octopus
     end
 
     def check_schema_migrations(shard)
-      OctopusModel.using(shard).connection.table_exists?(
+      OctopusModel.using_shard(shard).connection.table_exists?(
         ActiveRecord::Migrator.schema_migrations_table_name,
-      ) || OctopusModel.using(shard).connection.initialize_schema_migrations_table
+      ) || OctopusModel.using_shard(shard).connection.initialize_schema_migrations_table
     end
 
     def transaction(options = {}, &block)

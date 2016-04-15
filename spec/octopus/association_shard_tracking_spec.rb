@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canada] do
   describe 'when you have a 1 x 1 relationship' do
     before(:each) do
-      @computer_brazil = Computer.using(:brazil).create!(:name => 'Computer Brazil')
+      @computer_brazil = Computer.using_shard(:brazil).create!(:name => 'Computer Brazil')
       @computer_master = Computer.create!(:name => 'Computer Brazil')
-      @keyboard_brazil = Keyboard.using(:brazil).create!(:name => 'Keyboard Brazil', :computer => @computer_brazil)
+      @keyboard_brazil = Keyboard.using_shard(:brazil).create!(:name => 'Keyboard Brazil', :computer => @computer_brazil)
       @keyboard_master = Keyboard.create!(:name => 'Keyboard Master', :computer => @computer_master)
     end
 
@@ -15,7 +15,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should read correctly the relationed model' do
-      new_computer_brazil = Computer.using(:brazil).create!(:name => 'New Computer Brazil')
+      new_computer_brazil = Computer.using_shard(:brazil).create!(:name => 'New Computer Brazil')
       _new_computer_hello = Computer.create!(:name => 'New Computer Brazil')
       @keyboard_brazil.computer = new_computer_brazil
       @keyboard_brazil.save
@@ -28,7 +28,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should work when using #build_computer or #build_keyboard' do
-      c = Computer.using(:brazil).create!(:name => 'Computer Brazil')
+      c = Computer.using_shard(:brazil).create!(:name => 'Computer Brazil')
       k = c.build_keyboard(:name => 'Building keyboard')
       c.save
       k.save
@@ -38,7 +38,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should work when using #create_computer or #create_keyboard' do
-      c = Computer.using(:brazil).create!(:name => 'Computer Brazil')
+      c = Computer.using_shard(:brazil).create!(:name => 'Computer Brazil')
       k = c.create_keyboard(:name => 'Building keyboard')
       c.save
       k.save
@@ -48,24 +48,24 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should include models' do
-      c = Computer.using(:brazil).create!(:name => 'Computer Brazil')
+      c = Computer.using_shard(:brazil).create!(:name => 'Computer Brazil')
       k = c.create_keyboard(:name => 'Building keyboard')
       c.save
       k.save
 
-      expect(Computer.using(:brazil).includes(:keyboard).find(c.id)).to eq(c)
+      expect(Computer.using_shard(:brazil).includes(:keyboard).find(c.id)).to eq(c)
     end
   end
 
   describe 'when you have a N x N relationship' do
     before(:each) do
-      @brazil_role = Role.using(:brazil).create!(:name => 'Brazil Role')
+      @brazil_role = Role.using_shard(:brazil).create!(:name => 'Brazil Role')
       @master_role = Role.create!(:name => 'Master Role')
-      @permission_brazil = Permission.using(:brazil).create!(:name => 'Brazil Permission')
-      @permission_master = Permission.using(:master).create!(:name => 'Master Permission')
+      @permission_brazil = Permission.using_shard(:brazil).create!(:name => 'Brazil Permission')
+      @permission_master = Permission.using_shard(:master).create!(:name => 'Master Permission')
       @brazil_role.permissions << @permission_brazil
       @brazil_role.save
-      Client.using(:master).create!(:name => 'teste')
+      Client.using_shard(:master).create!(:name => 'teste')
     end
 
     it 'should find all models in the specified shard' do
@@ -85,7 +85,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should update the attribute for the item' do
-      new_brazil_role = Role.using(:brazil).create!(:name => 'new Role')
+      new_brazil_role = Role.using_shard(:brazil).create!(:name => 'new Role')
       @permission_brazil.roles = [new_brazil_role]
       expect(@permission_brazil.roles).to eq([new_brazil_role])
       @permission_brazil.save
@@ -95,7 +95,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should works for build method' do
-      new_brazil_role = Role.using(:brazil).create!(:name => 'Brazil Role')
+      new_brazil_role = Role.using_shard(:brazil).create!(:name => 'Brazil Role')
       c = new_brazil_role.permissions.create(:name => 'new Permission')
       c.save
       new_brazil_role.save
@@ -105,8 +105,8 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
 
     describe 'it should works when using' do
       before(:each) do
-        @permission_brazil_2 = Permission.using(:brazil).create!(:name => 'Brazil Item 2')
-        @role = Role.using(:brazil).create!(:name => 'testes')
+        @permission_brazil_2 = Permission.using_shard(:brazil).create!(:name => 'Brazil Item 2')
+        @role = Role.using_shard(:brazil).create!(:name => 'testes')
       end
 
       it 'update_attributes' do
@@ -222,12 +222,12 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
 
   describe 'when you have has_many :through' do
     before(:each) do
-      @programmer = Programmer.using(:brazil).create!(:name => 'Thiago')
-      @project = Project.using(:brazil).create!(:name => 'RubySoc')
-      @project2 = Project.using(:brazil).create!(:name => 'Cobol Application')
+      @programmer = Programmer.using_shard(:brazil).create!(:name => 'Thiago')
+      @project = Project.using_shard(:brazil).create!(:name => 'RubySoc')
+      @project2 = Project.using_shard(:brazil).create!(:name => 'Cobol Application')
       @programmer.projects << @project
       @programmer.save
-      Project.using(:master).create!(:name => 'Project Master')
+      Project.using_shard(:master).create!(:name => 'Project Master')
     end
 
     it 'should find all models in the specified shard' do
@@ -239,7 +239,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should update the attribute for the item' do
-      new_brazil_programmer = Programmer.using(:brazil).create!(:name => 'Joao')
+      new_brazil_programmer = Programmer.using_shard(:brazil).create!(:name => 'Joao')
       @project.programmers = [new_brazil_programmer]
       expect(@project.programmers).to eq([new_brazil_programmer])
       @project.save
@@ -249,7 +249,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should works for create method' do
-      new_brazil_programmer = Programmer.using(:brazil).create!(:name => 'Joao')
+      new_brazil_programmer = Programmer.using_shard(:brazil).create!(:name => 'Joao')
       c = new_brazil_programmer.projects.create(:name => 'new Project')
       c.save
       new_brazil_programmer.save
@@ -259,8 +259,8 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
 
     describe 'it should works when using' do
       before(:each) do
-        @new_brazil_programmer = Programmer.using(:brazil).create!(:name => 'Jose')
-        @project = Project.using(:brazil).create!(:name => 'VB Application :-(')
+        @new_brazil_programmer = Programmer.using_shard(:brazil).create!(:name => 'Jose')
+        @project = Project.using_shard(:brazil).create!(:name => 'VB Application :-(')
       end
 
       it 'update_attributes' do
@@ -376,12 +376,12 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
 
   describe 'when you have a 1 x N relationship' do
     before(:each) do
-      @brazil_client = Client.using(:brazil).create!(:name => 'Brazil Client')
+      @brazil_client = Client.using_shard(:brazil).create!(:name => 'Brazil Client')
       @master_client = Client.create!(:name => 'Master Client')
-      @item_brazil = Item.using(:brazil).create!(:name => 'Brazil Item', :client => @brazil_client)
+      @item_brazil = Item.using_shard(:brazil).create!(:name => 'Brazil Item', :client => @brazil_client)
       @item_master = Item.create!(:name => 'Master Item', :client => @master_client)
-      @brazil_client = Client.using(:brazil).find_by_name('Brazil Client')
-      Client.using(:master).create!(:name => 'teste')
+      @brazil_client = Client.using_shard(:brazil).find_by_name('Brazil Client')
+      Client.using_shard(:master).create!(:name => 'teste')
     end
 
     it 'should find all models in the specified shard' do
@@ -398,12 +398,12 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
 
     it 'should raise error if you try to add a record from a different shard' do
       expect do
-        @brazil_client.items << Item.using(:canada).create!(:name => 'New User')
+        @brazil_client.items << Item.using_shard(:canada).create!(:name => 'New User')
       end.to raise_error('Association Error: Records are from different shards')
     end
 
     it 'should update the attribute for the item' do
-      new_brazil_client = Client.using(:brazil).create!(:name => 'new Client')
+      new_brazil_client = Client.using_shard(:brazil).create!(:name => 'new Client')
       @item_brazil.client = new_brazil_client
       expect(@item_brazil.client).to eq(new_brazil_client)
       @item_brazil.save
@@ -413,7 +413,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should works for build method' do
-      item2 = Item.using(:brazil).create!(:name => 'Brazil Item')
+      item2 = Item.using_shard(:brazil).create!(:name => 'Brazil Item')
       c = item2.create_client(:name => 'new Client')
       c.save
       item2.save
@@ -442,7 +442,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
 
     describe 'it should works when using' do
       before(:each) do
-        @item_brazil_2 = Item.using(:brazil).create!(:name => 'Brazil Item 2')
+        @item_brazil_2 = Item.using_shard(:brazil).create!(:name => 'Brazil Item 2')
         expect(@brazil_client.items.to_set).to eq([@item_brazil].to_set)
       end
 
@@ -557,12 +557,12 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
 
   describe 'when you have a 1 x N polymorphic relationship' do
     before(:each) do
-      @brazil_client = Client.using(:brazil).create!(:name => 'Brazil Client')
+      @brazil_client = Client.using_shard(:brazil).create!(:name => 'Brazil Client')
       @master_client = Client.create!(:name => 'Master Client')
-      @comment_brazil = Comment.using(:brazil).create!(:name => 'Brazil Comment', :commentable => @brazil_client)
+      @comment_brazil = Comment.using_shard(:brazil).create!(:name => 'Brazil Comment', :commentable => @brazil_client)
       @comment_master = Comment.create!(:name => 'Master Comment', :commentable => @master_client)
-      @brazil_client = Client.using(:brazil).find_by_name('Brazil Client')
-      Client.using(:master).create!(:name => 'teste')
+      @brazil_client = Client.using_shard(:brazil).find_by_name('Brazil Client')
+      Client.using_shard(:master).create!(:name => 'teste')
     end
 
     it 'should find all models in the specified shard' do
@@ -575,7 +575,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
     end
 
     it 'should update the attribute for the comment' do
-      new_brazil_client = Client.using(:brazil).create!(:name => 'new Client')
+      new_brazil_client = Client.using_shard(:brazil).create!(:name => 'new Client')
       @comment_brazil.commentable = new_brazil_client
       expect(@comment_brazil.commentable).to eq(new_brazil_client)
       @comment_brazil.save
@@ -586,7 +586,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
 
     describe 'it should works when using' do
       before(:each) do
-        @comment_brazil_2 = Comment.using(:brazil).create!(:name => 'Brazil Comment 2')
+        @comment_brazil_2 = Comment.using_shard(:brazil).create!(:name => 'Brazil Comment 2')
         expect(@brazil_client.comments.to_set).to eq([@comment_brazil].to_set)
       end
 
@@ -706,7 +706,7 @@ describe Octopus::AssociationShardTracking, :shards => [:brazil, :master, :canad
   end
 
   it 'block' do
-    @brazil_role = Role.using(:brazil).create!(:name => 'Brazil Role')
+    @brazil_role = Role.using_shard(:brazil).create!(:name => 'Brazil Role')
     expect(@brazil_role.permissions.build(:name => 'ok').name).to eq('ok')
     expect(@brazil_role.permissions.create(:name => 'ok').name).to eq('ok')
     expect(@brazil_role.permissions.create!(:name => 'ok').name).to eq('ok')

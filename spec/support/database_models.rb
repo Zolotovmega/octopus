@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
   scope :thiago, -> { where(:name => 'Thiago') }
 
   def awesome_queries
-    Octopus.using(:canada) do
+    Octopus.using_shard(:canada) do
       User.create(:name => 'teste')
     end
   end

@@ -30,14 +30,14 @@ describe 'when the database is replicated' do
     include_context 'with query cache enabled' do
       it 'should do the queries with cache' do
         OctopusHelper.using_environment :replicated_with_one_slave  do
-          cat1 = Cat.using(:master).create!(:name => 'Master Cat 1')
-          _ct2 = Cat.using(:master).create!(:name => 'Master Cat 2')
-          expect(Cat.using(:master).find(cat1.id)).to eq(cat1)
-          expect(Cat.using(:master).find(cat1.id)).to eq(cat1)
-          expect(Cat.using(:master).find(cat1.id)).to eq(cat1)
+          cat1 = Cat.using_shard(:master).create!(:name => 'Master Cat 1')
+          _ct2 = Cat.using_shard(:master).create!(:name => 'Master Cat 2')
+          expect(Cat.using_shard(:master).find(cat1.id)).to eq(cat1)
+          expect(Cat.using_shard(:master).find(cat1.id)).to eq(cat1)
+          expect(Cat.using_shard(:master).find(cat1.id)).to eq(cat1)
 
-          cat3 = Cat.using(:slave1).create!(:name => 'Slave Cat 3')
-          _ct4 = Cat.using(:slave1).create!(:name => 'Slave Cat 4')
+          cat3 = Cat.using_shard(:slave1).create!(:name => 'Slave Cat 3')
+          _ct4 = Cat.using_shard(:slave1).create!(:name => 'Slave Cat 4')
           expect(Cat.find(cat3.id).id).to eq(cat3.id)
           expect(Cat.find(cat3.id).id).to eq(cat3.id)
           expect(Cat.find(cat3.id).id).to eq(cat3.id)
@@ -62,7 +62,7 @@ describe 'when the database is replicated' do
     Cat.create!(:name => 'Master Cat')
 
     OctopusHelper.using_environment :production_fully_replicated do
-      expect(Cat.using(:master).find_by_name('Master Cat')).not_to be_nil
+      expect(Cat.using_shard(:master).find_by_name('Master Cat')).not_to be_nil
     end
   end
 

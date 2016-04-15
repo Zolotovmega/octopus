@@ -16,7 +16,7 @@ module Octopus
       @klass = klass
     end
 
-    def using(shard)
+    def using_shard(shard)
       fail "Nonexistent Shard Name: #{shard}" if @klass.connection.instance_variable_get(:@shards)[shard].nil?
       @current_shard = shard
       self
@@ -49,7 +49,7 @@ module Octopus
       result
     end
 
-    # Delegates to method_missing (instead of @klass) so that User.using(:blah).where(:name => "Mike")
+    # Delegates to method_missing (instead of @klass) so that User.using_shard(:blah).where(:name => "Mike")
     # gets run in the correct shard context when #== is evaluated.
     def ==(other)
       method_missing(:==, other)

@@ -1,5 +1,5 @@
 class CreateUsersOnCanada < ActiveRecord::Migration
-  using(:canada)
+  using_shard(:canada)
 
   def self.up
     User.create!(:name => 'Sharding')

@@ -179,17 +179,17 @@ describe Octopus::Proxy do
       end
 
       it 'should work when using using syntax' do
-        user = User.using(:russia).create!(:name => 'Thiago')
+        user = User.using_shard(:russia).create!(:name => 'Thiago')
 
         user.name = 'New Thiago'
         user.save
 
-        expect(User.using(:russia).find_by_name('New Thiago')).to eq(user)
+        expect(User.using_shard(:russia).find_by_name('New Thiago')).to eq(user)
         expect(User.find_by_name('New Thiago')).to eq(user)
       end
 
       it 'should work when using blocks' do
-        Octopus.using(:russia) do
+        Octopus.using_shard(:russia) do
           @user = User.create!(:name => 'Thiago')
         end
 
@@ -244,7 +244,7 @@ describe Octopus::Proxy do
 
   describe 'saving multiple sharded objects at once' do
     before :each do
-      @p = MmorpgPlayer.using(:alone_shard).create!(:player_name => 'Thiago')
+      @p = MmorpgPlayer.using_shard(:alone_shard).create!(:player_name => 'Thiago')
     end
 
     subject { @p.save! }
@@ -274,24 +274,24 @@ describe Octopus::Proxy do
 
   describe 'connection reuse' do
     before :each do
-      @item_brazil_conn = Item.using(:brazil).new(:name => 'Brazil Item').class.connection.select_connection
-      @item_canada_conn = Item.using(:canada).new(:name => 'Canada Item').class.connection.select_connection
+      @item_brazil_conn = Item.using_shard(:brazil).new(:name => 'Brazil Item').class.connection.select_connection
+      @item_canada_conn = Item.using_shard(:canada).new(:name => 'Canada Item').class.connection.select_connection
     end
 
     it 'reuses connections' do
-      expect(Item.using(:brazil).new(:name => 'Another Brazil Item').class.connection.select_connection).to eq(@item_brazil_conn)
-      expect(Item.using(:canada).new(:name => 'Another Canada Item').class.connection.select_connection).to eq(@item_canada_conn)
+      expect(Item.using_shard(:brazil).new(:name => 'Another Brazil Item').class.connection.select_connection).to eq(@item_brazil_conn)
+      expect(Item.using_shard(:canada).new(:name => 'Another Canada Item').class.connection.select_connection).to eq(@item_canada_conn)
     end
 
     it 'reuses connections after clear_active_connections! is called' do
-      expect(Item.using(:brazil).new(:name => 'Another Brazil Item').class.connection.select_connection).to eq(@item_brazil_conn)
-      expect(Item.using(:canada).new(:name => 'Another Canada Item').class.connection.select_connection).to eq(@item_canada_conn)
+      expect(Item.using_shard(:brazil).new(:name => 'Another Brazil Item').class.connection.select_connection).to eq(@item_brazil_conn)
+      expect(Item.using_shard(:canada).new(:name => 'Another Canada Item').class.connection.select_connection).to eq(@item_canada_conn)
     end
 
     it 'creates new connections after clear_all_connections! is called' do
       Item.clear_all_connections!
-      expect(Item.using(:brazil).new(:name => 'Another Brazil Item').class.connection.select_connection).not_to eq(@item_brazil_conn)
-      expect(Item.using(:canada).new(:name => 'Another Canada Item').class.connection.select_connection).not_to eq(@item_canada_conn)
+      expect(Item.using_shard(:brazil).new(:name => 'Another Brazil Item').class.connection.select_connection).not_to eq(@item_brazil_conn)
+      expect(Item.using_shard(:canada).new(:name => 'Another Canada Item').class.connection.select_connection).not_to eq(@item_canada_conn)
     end
 
     it 'is consistent with connected?' do

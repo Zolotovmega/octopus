@@ -24,7 +24,7 @@ module Octopus
     end
 
     module ClassMethods
-      def using(*args)
+      def using_shard(*args)
         return self unless connection.is_a?(Octopus::Proxy)
 
         self.current_shard = args

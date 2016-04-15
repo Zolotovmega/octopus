@@ -1,8 +1,8 @@
 class CreateUsersUsingBlockAndUsing < ActiveRecord::Migration
-  using(:brazil)
+  using_shard(:brazil)
 
   def self.up
-    Octopus.using(:canada) do
+    Octopus.using_shard(:canada) do
       User.create!(:name => 'Canada')
     end
 

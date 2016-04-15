@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Octopus::RelationProxy do
   describe 'shard tracking' do
     before :each do
-      @client = Client.using(:canada).create!
-      @client.items << Item.using(:canada).create!
+      @client = Client.using_shard(:canada).create!
+      @client.items << Item.using_shard(:canada).create!
       @relation = @client.items
     end
 
@@ -14,7 +14,7 @@ describe Octopus::RelationProxy do
 
     unless Octopus.rails3?
       it 'can define collection association with the same name as ancestor private method' do
-        @client.comments << Comment.using(:canada).create!(open: true)
+        @client.comments << Comment.using_shard(:canada).create!(open: true)
         expect(@client.comments.open).to be_a_kind_of(ActiveRecord::Relation)
       end
     end
@@ -59,22 +59,22 @@ describe Octopus::RelationProxy do
 
       it 'lazily evaluates on the correct shard' do
         # Do something to force Client.connection_proxy.current_shard to change
-        _some_count = Client.using(:brazil).count
+        _some_count = Client.using_shard(:brazil).count
         expect(@relation.select(:client_id).count).to eq(1)
       end
     end
 
     context 'when an explicit, but different, shard context is provided' do
       it 'uses the correct shard' do
-        expect(Item.using(:brazil).count).to eq(0)
-        _clients_on_brazil = Client.using(:brazil).all
-        Octopus.using(:brazil) do
+        expect(Item.using_shard(:brazil).count).to eq(0)
+        _clients_on_brazil = Client.using_shard(:brazil).all
+        Octopus.using_shard(:brazil) do
           expect(@relation.count).to eq(1)
         end
       end
 
       it 'uses the correct shard in block when method_missing is triggered on CollectionProxy objects' do
-        Octopus.using(:brazil) do
+        Octopus.using_shard(:brazil) do
           @client.items.each do |item|
             expect(item.current_shard).to eq(:canada)
             expect(ActiveRecord::Base.connection.current_shard).to eq(:brazil)
@@ -83,8 +83,8 @@ describe Octopus::RelationProxy do
       end
 
       it 'lazily evaluates on the correct shard' do
-        expect(Item.using(:brazil).count).to eq(0)
-        Octopus.using(:brazil) do
+        expect(Item.using_shard(:brazil).count).to eq(0)
+        Octopus.using_shard(:brazil) do
           expect(@relation.select(:client_id).count).to eq(1)
         end
       end

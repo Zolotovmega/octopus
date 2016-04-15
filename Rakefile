@@ -64,9 +64,9 @@ namespace :db do
       # the model be a descendent of ActiveRecord::Base.
       class BlankModel < ActiveRecord::Base; end
 
-      BlankModel.using(shard_symbol).connection.initialize_schema_migrations_table
+      BlankModel.using_shard(shard_symbol).connection.initialize_schema_migrations_table
 
-      BlankModel.using(shard_symbol).connection.create_table(:users) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:users) do |u|
         u.string :name
         u.integer :number
         u.boolean :admin
@@ -74,91 +74,91 @@ namespace :db do
         u.datetime :updated_at
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:clients) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:clients) do |u|
         u.string :country
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:cats) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:cats) do |u|
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:items) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:items) do |u|
         u.string :name
         u.integer :client_id
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:computers) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:computers) do |u|
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:keyboards) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:keyboards) do |u|
         u.string :name
         u.integer :computer_id
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:roles) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:roles) do |u|
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:permissions) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:permissions) do |u|
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:permissions_roles, :id => false) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:permissions_roles, :id => false) do |u|
         u.integer :role_id
         u.integer :permission_id
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:assignments) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:assignments) do |u|
         u.integer :programmer_id
         u.integer :project_id
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:programmers) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:programmers) do |u|
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:projects) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:projects) do |u|
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:comments) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:comments) do |u|
         u.string :name
         u.string :commentable_type
         u.integer :commentable_id
         u.boolean :open, default: false
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:parts) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:parts) do |u|
         u.string :name
         u.integer :item_id
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:yummy) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:yummy) do |u|
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:adverts) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:adverts) do |u|
         u.string :name
       end
 
-      BlankModel.using(shard_symbol).connection.create_table(:custom) do |u|
+      BlankModel.using_shard(shard_symbol).connection.create_table(:custom) do |u|
         u.string :value
       end
 
       if shard_symbol == :alone_shard
-        BlankModel.using(shard_symbol).connection.create_table(:mmorpg_players) do |u|
+        BlankModel.using_shard(shard_symbol).connection.create_table(:mmorpg_players) do |u|
           u.string :player_name
         end
 
-        BlankModel.using(shard_symbol).connection.create_table(:weapons) do |u|
+        BlankModel.using_shard(shard_symbol).connection.create_table(:weapons) do |u|
           u.integer :mmorpg_player_id
           u.string :name
           u.string :hand
         end
 
-        BlankModel.using(shard_symbol).connection.create_table(:skills) do |u|
+        BlankModel.using_shard(shard_symbol).connection.create_table(:skills) do |u|
           u.integer :mmorpg_player_id
           u.integer :weapon_id
           u.string :name
