@@ -18,13 +18,13 @@ describe 'when the database is replicated and has slave groups' do
       # When a select-count query is sent to `octopus_shard_2`, it should return 0.
 
       # The query goes to `octopus_shard_1`
-      expect(Cat.using(:master).count).to eq(2)
+      expect(Cat.using_shard(:master).count).to eq(2)
       # The query goes to `octopus_shard_1`
       expect(Cat.count).to eq(2)
       # The query goes to `octopus_shard_2`
-      expect(Cat.using(:slave_group => :slaves1).count).to eq(0)
+      expect(Cat.using_shard(:slave_group => :slaves1).count).to eq(0)
       # The query goes to `octopus_shard_1`
-      expect(Cat.using(:slave_group => :slaves2).count).to eq(2)
+      expect(Cat.using_shard(:slave_group => :slaves2).count).to eq(2)
     end
   end
 
@@ -36,11 +36,11 @@ describe 'when the database is replicated and has slave groups' do
       Cat.create!(:name => 'Thiago2')
 
       # The query goes to :slave32(`octopus_shard_2`)
-      expect(Cat.using(:slave_group => :slaves3).count).to eq(0)
+      expect(Cat.using_shard(:slave_group => :slaves3).count).to eq(0)
       # The query goes to :slave31(`octopus_shard_1`)
-      expect(Cat.using(:slave_group => :slaves3).count).to eq(2)
+      expect(Cat.using_shard(:slave_group => :slaves3).count).to eq(2)
       # The query goes to :slave32(`octopus_shard_2`)
-      expect(Cat.using(:slave_group => :slaves3).count).to eq(0)
+      expect(Cat.using_shard(:slave_group => :slaves3).count).to eq(0)
     end
   end
 

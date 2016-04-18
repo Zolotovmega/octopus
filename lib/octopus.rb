@@ -109,7 +109,7 @@ module Octopus
     ActiveRecord::Base.connection.initialize_shards(@config)
   end
 
-  def self.using(shard, &block)
+  def self.using_shard(shard, &block)
     conn = ActiveRecord::Base.connection
 
     if conn.is_a?(Octopus::Proxy)

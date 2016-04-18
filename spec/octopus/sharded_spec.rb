@@ -11,7 +11,7 @@ describe 'when the database is not entire sharded' do
     # User.create!(:name => "Thiago")
     #
     # using_environment :not_entire_sharded do
-    #   Octopus.using(:russia) do
+    #   Octopus.using_shard(:russia) do
     #     User.create!(:name => "Thiago")
     #   end
     # end
@@ -23,7 +23,7 @@ describe 'when the database is not entire sharded' do
     Cat.create!(:name => 'Thiago')
 
     OctopusHelper.using_environment :not_entire_sharded do
-      Octopus.using(:russia) do
+      Octopus.using_shard(:russia) do
         Cat.create!(:name => 'Thiago')
       end
     end

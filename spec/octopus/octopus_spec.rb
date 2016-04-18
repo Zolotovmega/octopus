@@ -37,13 +37,13 @@ describe Octopus, :shards => [] do
     end
 
     it 'should permit users to configure shards on initializer files, instead of on a yml file.' do
-      expect { User.using(:crazy_shard).create!(:name => 'Joaquim') }.to raise_error
+      expect { User.using_shard(:crazy_shard).create!(:name => 'Joaquim') }.to raise_error
 
       Octopus.setup do |config|
         config.shards = { :crazy_shard => { :adapter => 'mysql2', :database => 'octopus_shard_5', :username => 'root', :password => '' } }
       end
 
-      expect { User.using(:crazy_shard).create!(:name => 'Joaquim')  }.not_to raise_error
+      expect { User.using_shard(:crazy_shard).create!(:name => 'Joaquim')  }.not_to raise_error
     end
   end
 
@@ -91,7 +91,7 @@ describe Octopus, :shards => [] do
     before do
       OctopusHelper.using_environment :production_replicated do
         OctopusHelper.clean_all_shards([:slave1, :slave2, :slave3, :slave4])
-        4.times { |i| User.using(:"slave#{i + 1}").create!(:name => 'Slave User') }
+        4.times { |i| User.using_shard(:"slave#{i + 1}").create!(:name => 'Slave User') }
       end
     end
 

@@ -20,7 +20,7 @@ module Octopus
         instance_variable_set(:@quoted_table_name, nil)
       end
 
-      def using(shard)
+      def using_shard(shard)
         if Octopus.enabled?
           clean_table_name
           Octopus::ScopeProxy.new(shard, self)
@@ -62,7 +62,7 @@ module Octopus
 
       def perform_validations_with_octopus(*args)
         if Octopus.enabled? && should_set_current_shard?
-          Octopus.using(current_shard) do
+          Octopus.using_shard(current_shard) do
             perform_validations_without_octopus(*args)
           end
         else

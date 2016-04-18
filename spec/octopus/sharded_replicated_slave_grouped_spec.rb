@@ -5,7 +5,7 @@ describe 'when the database is both sharded and replicated' do
   it 'should pick the shard based on current_shard when you have a sharded model' do
 
     OctopusHelper.using_environment :sharded_replicated_slave_grouped do
-      Octopus.using(:russia) do
+      Octopus.using_shard(:russia) do
         Cat.create!(:name => 'Thiago1')
         Cat.create!(:name => 'Thiago2')
       end
@@ -13,27 +13,27 @@ describe 'when the database is both sharded and replicated' do
       # We must stub here to make it effective (not in the `before(:each)` block)
       allow(Octopus).to receive(:env).and_return('sharded_replicated_slave_grouped')
 
-      expect(Cat.using(:russia).count).to eq(2)
+      expect(Cat.using_shard(:russia).count).to eq(2)
       # It distributes queries between two slaves in the slave group
-      expect(Cat.using(:shard => :russia, :slave_group => :slaves1).count).to eq(0)
-      expect(Cat.using(:shard => :russia, :slave_group => :slaves1).count).to eq(2)
-      expect(Cat.using(:shard => :russia, :slave_group => :slaves1).count).to eq(0)
+      expect(Cat.using_shard(:shard => :russia, :slave_group => :slaves1).count).to eq(0)
+      expect(Cat.using_shard(:shard => :russia, :slave_group => :slaves1).count).to eq(2)
+      expect(Cat.using_shard(:shard => :russia, :slave_group => :slaves1).count).to eq(0)
       # It distributes queries between two slaves in the slave group
-      expect(Cat.using(:shard => :russia, :slave_group => :slaves2).count).to eq(2)
-      expect(Cat.using(:shard => :russia, :slave_group => :slaves2).count).to eq(0)
-      expect(Cat.using(:shard => :russia, :slave_group => :slaves2).count).to eq(2)
+      expect(Cat.using_shard(:shard => :russia, :slave_group => :slaves2).count).to eq(2)
+      expect(Cat.using_shard(:shard => :russia, :slave_group => :slaves2).count).to eq(0)
+      expect(Cat.using_shard(:shard => :russia, :slave_group => :slaves2).count).to eq(2)
 
-      expect(Cat.using(:europe).count).to eq(0)
-      expect(Cat.using(:shard => :europe, :slave_group => :slaves1)
+      expect(Cat.using_shard(:europe).count).to eq(0)
+      expect(Cat.using_shard(:shard => :europe, :slave_group => :slaves1)
         .count).to eq(0)
-      expect(Cat.using(:shard => :europe, :slave_group => :slaves2)
+      expect(Cat.using_shard(:shard => :europe, :slave_group => :slaves2)
         .count).to eq(2)
     end
   end
 
   it 'should make queries to master when slave groups are configured for the shard but not selected' do
     OctopusHelper.using_environment :sharded_replicated_slave_grouped do
-      Octopus.using(:europe) do
+      Octopus.using_shard(:europe) do
         # All the queries go to :master(`octopus_shard_1`)
 
         Cat.create!(:name => 'Thiago1')

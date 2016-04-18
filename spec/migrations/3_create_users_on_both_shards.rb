@@ -1,5 +1,5 @@
 class CreateUsersOnBothShards < ActiveRecord::Migration
-  using(:brazil, :canada)
+  using_shard(:brazil, :canada)
 
   def self.up
     User.create!(:name => 'Both')
